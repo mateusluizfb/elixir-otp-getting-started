@@ -11,6 +11,10 @@ defmodule KV.Registry do
     GenServer.call(server, {:lookup, name})
   end
 
+  def create(server, name) do
+    GenServer.cast(server, {:create, name})
+  end
+
   ### Server
 
   def init(:ok) do
@@ -18,6 +22,11 @@ defmodule KV.Registry do
   end
 
   def handle_call({:lookup, name}, _from, names) do
-    {:reply, :error, names}
+    {:reply, Map.fetch(names, name), names}
+  end
+
+  def handle_cast({:create, name}, names) do
+    {:ok, bucket} = KV.Bucket.start_link()
+    {:noreply, Map.put(names, name, bucket)}
   end
 end

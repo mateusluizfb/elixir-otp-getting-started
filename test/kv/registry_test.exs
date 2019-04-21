@@ -2,7 +2,7 @@ defmodule KV.RegistryTest do
   use ExUnit.Case, async: true
 
   setup do
-    {:ok, registry} = KV.Registry.start_link([])
+    registry = start_supervised!(KV.Registry) # Impede que os testes interfiram entre si
     %{registry: registry}
   end
 
@@ -11,8 +11,18 @@ defmodule KV.RegistryTest do
     assert status == :ok
   end
 
-  test "search for an item in bucket", %{ registry: registry } do
-    status = KV.Registry.lookup(registry, 'simple bucket')
+  test "search for a invalid bucket", %{ registry: registry } do
+    status = KV.Registry.lookup(registry, "simple bucket")
     assert status == :error
   end
+
+  test "search for a valid bucket", %{ registry: registry } do
+    KV.Registry.create(registry, "GenServer bucket")
+    assert {:ok, _} = KV.Registry.lookup(registry, "GenServer bucket")
+  end
+
+  # test "create an item in the bucket", %{ registry: registry } do
+    # require IEx; IEx.pry
+    # assert Map.get(buckets, "GenServer bucket") == nil
+  # end
 end
