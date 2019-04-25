@@ -20,9 +20,4 @@ defmodule KV.RegistryTest do
     KV.Registry.create(registry, "GenServer bucket")
     assert {:ok, _} = KV.Registry.lookup(registry, "GenServer bucket")
   end
-
-  # test "create an item in the bucket", %{ registry: registry } do
-    # require IEx; IEx.pry
-    # assert Map.get(buckets, "GenServer bucket") == nil
-  # end
 end

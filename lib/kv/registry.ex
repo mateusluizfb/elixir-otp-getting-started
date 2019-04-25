@@ -26,7 +26,11 @@ defmodule KV.Registry do
   end
 
   def handle_cast({:create, name}, names) do
-    {:ok, bucket} = KV.Bucket.start_link()
-    {:noreply, Map.put(names, name, bucket)}
+    if Map.has_key?(names, name) do
+      {:noreply, names}
+    else
+      {:ok, bucket} = KV.Bucket.start_link()
+      {:noreply, Map.put(names, name, bucket)}
+    end
   end
 end
