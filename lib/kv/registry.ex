@@ -12,9 +12,4 @@ defmodule KV.RegistryClient do
   def create(server, name) do
     GenServer.cast(server, {:create, name})
   end
-
-  # Porque adicionar isso no cliente?
-  # def init(:ok) do
-  #   {:ok, %{}}
-  # end
 end
