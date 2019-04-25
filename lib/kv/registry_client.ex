@@ -1,6 +1,7 @@
 defmodule KV.RegistryClient do
   use GenServer
 
+  @spec start_link([]) :: {}
   def start_link(opts) do
     GenServer.start_link(KV.RegistryServer, :ok, opts)
   end
