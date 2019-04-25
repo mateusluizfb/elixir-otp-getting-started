@@ -1,10 +1,8 @@
-defmodule KV.Registry do
+defmodule KV.RegistryClient do
   use GenServer
 
-  ### Client
-
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, :ok, opts)
+    GenServer.start_link(KV.RegistryServer, :ok, opts)
   end
 
   def lookup(server, name) do
@@ -15,22 +13,8 @@ defmodule KV.Registry do
     GenServer.cast(server, {:create, name})
   end
 
-  ### Server
-
-  def init(:ok) do
-    {:ok, %{}}
-  end
-
-  def handle_call({:lookup, name}, _from, names) do
-    {:reply, Map.fetch(names, name), names}
-  end
-
-  def handle_cast({:create, name}, names) do
-    if Map.has_key?(names, name) do
-      {:noreply, names}
-    else
-      {:ok, bucket} = KV.Bucket.start_link()
-      {:noreply, Map.put(names, name, bucket)}
-    end
-  end
+  # Porque adicionar isso no cliente?
+  # def init(:ok) do
+  #   {:ok, %{}}
+  # end
 end
