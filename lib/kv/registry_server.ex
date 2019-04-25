@@ -10,12 +10,30 @@ defmodule KV.RegistryServer do
     {:reply, Map.fetch(bkt_names, name), state}
   end
 
-  def handle_cast({:create, name}, {bkt_names, _}) do
+  def handle_cast({:create, name}, {bkt_names, bkt_monitor_refs}) do
     if Map.has_key?(bkt_names, name) do
       {:noreply, {bkt_names, %{}}}
     else
       {:ok, bucket} = KV.Bucket.start_link()
-      {:noreply, {Map.put(bkt_names, name, bucket), %{}}}
+      ref = Process.monitor(bucket)
+      {
+        :noreply,
+        {
+          Map.put(bkt_names, name, bucket),
+          Map.put(bkt_monitor_refs, ref, name)
+        }
+      }
     end
+  end
+
+  def handle_info({:DOWN, ref, :process, _, :normal}, {bkt_names, bkt_monitor_refs}) do
+    { name, remaining_monitor_refs } = Map.pop(bkt_monitor_refs, ref)
+    {
+      :noreply,
+      {
+        Map.delete(bkt_names, name),
+        remaining_monitor_refs
+      }
+    }
   end
 end

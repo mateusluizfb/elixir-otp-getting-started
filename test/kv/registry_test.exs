@@ -1,6 +1,6 @@
 # :debugger.start
 # :int.ni(KV.RegistryServer)
-# :int.break(KV.RegistryServer, 9)
+# :int.break(KV.RegistryServer, 31)
 
 defmodule KV.RegistryTest do
   use ExUnit.Case, async: true
@@ -25,10 +25,10 @@ defmodule KV.RegistryTest do
     assert {:ok, _} = KV.RegistryClient.lookup(registry, "GenServer bucket")
   end
 
-  # test "removes buckets on exit", %{ registry: registry } do
-  #   KV.RegistryClient.create(registry, "GenServer bucket")
-  #   {:ok, bucket} = KV.RegistryClient.lookup(registry, "GenServer bucket")
-  #   Agent.stop(bucket)
-  #   assert KV.RegistryClient.lookup(registry, "GenServer bucket") == :error
-  # end
+  test "removes buckets on exit", %{ registry: registry } do
+    KV.RegistryClient.create(registry, "GenServer bucket")
+    {:ok, bucket} = KV.RegistryClient.lookup(registry, "GenServer bucket")
+    Agent.stop(bucket)
+    assert KV.RegistryClient.lookup(registry, "GenServer bucket") == :error
+  end
 end
