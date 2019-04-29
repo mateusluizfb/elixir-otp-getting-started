@@ -12,7 +12,7 @@ defmodule KV.RegistryServer do
 
   def handle_cast({:create, name}, {bkt_names, bkt_monitor_refs}) do
     if Map.has_key?(bkt_names, name) do
-      {:noreply, {bkt_names, %{}}}
+      {:noreply, {bkt_names, {bkt_names, bkt_monitor_refs}}}
     else
       {:ok, bucket} = KV.Bucket.start_link()
       ref = Process.monitor(bucket)
@@ -36,4 +36,7 @@ defmodule KV.RegistryServer do
       }
     }
   end
+
+  # TODO  add um handle info padrão
+
 end
