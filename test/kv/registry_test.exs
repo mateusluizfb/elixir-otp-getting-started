@@ -31,4 +31,13 @@ defmodule KV.RegistryTest do
     Agent.stop(bucket)
     assert KV.RegistryClient.lookup(registry, "GenServer bucket") == :error
   end
+
+  test "Supervisor will revive the dead gensever" do
+    {:ok, pid} = KV.Supervisor.start_link([])
+    KV.RegistryClient.create KV.RegistryClient, "wallet"
+    [h | _] = Supervisor.which_children(pid)
+    {KV.RegistryClient, pid_reg, _, _} = h
+    send(pid_reg, :insta_kill)
+    assert %{active: 1} = Supervisor.count_children(pid)
+  end
 end
